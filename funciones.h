@@ -7,17 +7,20 @@
 
 using namespace std;
 
-//DECLARACION DEL TAMAÑO DE LA MATRIZ
-#define _TMATRIZ 5
+//DECLARACION DEL TAMAÑO DE LA MATRIZ, SIEMPRE TIENE QUE SER MAYOR O IGUAL A 5
+#define _TMATRIZ 6
 //DECLARACION DE LAS FUNCIONES
 void imprimirTablero(char tablero[][_TMATRIZ], struct puntero pos);
 void rellenarTablero(char tablero[][_TMATRIZ]);
 void moverPuntero(char tablero[][_TMATRIZ], struct puntero *pos, bool enter);
 void revisarTres(char tablero[][_TMATRIZ]);
+int revisarHor(char tablero[][_TMATRIZ]);
+int revisarVer(char tablero[][_TMATRIZ]);
 //MATRIZ DE COMBINACION
-char combi[3] = {0,0,0};
+char combi[5] = {0,0,0,0,0};
 //CONTADOR DE COMBINACION
 int combinacion = 0;
+int puntos = 0;
 
 //ESTRUCTURA DEL PUNTERO
 struct puntero{
@@ -39,8 +42,10 @@ void imprimirTablero(char tablero[][_TMATRIZ], struct puntero pos){
 				cout<<tablero[i][j]<<"   ";	
 			}
 		}	
-		cout<<"\n \n";			
+		cout<<"\n \n";		
 	}
+	cout<<"Puntos:"<<puntos;
+	cout<<"\n \n";	
 }
 
 //FUNCION PARA RELLENAR EL TABLERO
@@ -129,6 +134,8 @@ void moverPuntero(char tablero[][_TMATRIZ], struct puntero *pos, bool enter){
 		//GUARDA EL VALOR DE LA PRIMERA POSICION EN LA SEGUNDA
 		tablero[pos->posY][pos->posX] = primerValor;
 		revisarTres(tablero);
+		Sleep(500);
+		cout<<"s";
 		if(combinacion == 0){
 			tablero[pos->posY][pos->posX] = *primerPos;
 			pos->posY = pos->preposY;
@@ -144,13 +151,22 @@ void moverPuntero(char tablero[][_TMATRIZ], struct puntero *pos, bool enter){
 
 //FUNCION QUE REVISA LAS COMBINACIONES
 void revisarTres(char tablero[][_TMATRIZ]){
-	combinacion = 0;
+	combinacion = revisarHor(tablero);
+	combinacion = revisarVer(tablero);
+}
+
+int revisarHor(char tablero[][_TMATRIZ]){
+	int combo = 0;
 	for(int i=0;i<_TMATRIZ;i++){
 		for(int j=0;j<_TMATRIZ;j++){
+			combi[5] = combi[4];
+			combi[4] = combi[3];
+			combi[3] = combi[2];
 			combi[2] = combi[1];
 			combi[1] = combi[0];
 			combi[0] = tablero[i][j];
-			if(combi[2] == combi[1] && combi[0] == combi[1]){
+			//COMBINACION DE A 5
+			if(combi[1] == combi[0] && combi[2] == combi[0] && combi[3] == combi[0] && combi[4] == combi[0]){
 				//VERIFICA SI NO ESTA EN LA CIMA DEL TABLERO
 				if(i != 0){
 					//MUEVE TODAS LAS COLUMNAS DE LA COMBINACION HACIA ABAJO
@@ -159,7 +175,82 @@ void revisarTres(char tablero[][_TMATRIZ]){
 						if(tablero[i-1][j] != '#'){
 							tablero[i][j]   = tablero[i-1][j];
 							tablero[i][j-1] = tablero[i-1][j-1];
-							tablero[i][j-2] = tablero[i-1][j-2];	
+							tablero[i][j-2] = tablero[i-1][j-2];
+							tablero[i][j-3] = tablero[i-1][j-3];
+							tablero[i][j-4] = tablero[i-1][j-4];	
+							i--;
+						}
+						else{
+							i--;
+						}	
+					}
+					//DEJA VACIO LA FILA SUPERIOR DEL TABLERO EN LAS CASILLAS DONDE SE HIZO LA COMBINACION		
+					tablero[i][j]   = '#';
+					tablero[i][j-1] = '#';
+					tablero[i][j-2] = '#';
+					tablero[i][j-3] = '#';
+					tablero[i][j-4] = '#';
+				}
+				else{
+					//DEJA VACIO LA FILA SUPERIOR DEL TABLERO EN LAS CASILLAS DONDE SE HIZO LA COMBINACION
+					tablero[i][j]   = '#';
+					tablero[i][j-1] = '#';
+					tablero[i][j-2] = '#';
+					tablero[i][j-3] = '#';
+					tablero[i][j-4] = '#';
+				}		
+				//HUBO COMBINACION
+				combo = 1;
+				puntos += 500;
+				return combo;
+			}
+			//DE A 4
+			else if(combi[1] == combi[0] && combi[2] == combi[0] && combi[3] == combi[0]){
+				//VERIFICA SI NO ESTA EN LA CIMA DEL TABLERO
+				if(i != 0){
+					//MUEVE TODAS LAS COLUMNAS DE LA COMBINACION HACIA ABAJO
+					while(i>0){
+						//REVISA SI HUBO OTRA COMBINACION ARRIBA
+						if(tablero[i-1][j] != '#'){
+							tablero[i][j]   = tablero[i-1][j];
+							tablero[i][j-1] = tablero[i-1][j-1];
+							tablero[i][j-2] = tablero[i-1][j-2];
+							tablero[i][j-3] = tablero[i-1][j-3];	
+							i--;
+						}
+						else{
+							i--;
+						}	
+					}
+					//DEJA VACIO LA FILA SUPERIOR DEL TABLERO EN LAS CASILLAS DONDE SE HIZO LA COMBINACION		
+					tablero[i][j]   = '#';
+					tablero[i][j-1] = '#';
+					tablero[i][j-2] = '#';
+					tablero[i][j-3] = '#';
+				}
+				else{
+					//DEJA VACIO LA FILA SUPERIOR DEL TABLERO EN LAS CASILLAS DONDE SE HIZO LA COMBINACION
+					tablero[i][j]   = '#';
+					tablero[i][j-1] = '#';
+					tablero[i][j-2] = '#';
+					tablero[i][j-3] = '#';
+				}		
+				//HUBO COMBINACION
+				combo = 2;
+				puntos += 300;
+				return combo;
+			}
+			//DE A TRES
+			else if(combi[1] == combi[0] && combi[2] == combi[0]){
+				//VERIFICA SI NO ESTA EN LA CIMA DEL TABLERO
+				if(i != 0){
+					//MUEVE TODAS LAS COLUMNAS DE LA COMBINACION HACIA ABAJO
+					while(i>0){
+						//REVISA SI HUBO OTRA COMBINACION ARRIBA
+						if(tablero[i-1][j] != '#'){
+							tablero[i][j]   = tablero[i-1][j];
+							tablero[i][j-1] = tablero[i-1][j-1];
+							tablero[i][j-2] = tablero[i-1][j-2];
 							i--;
 						}
 						else{
@@ -178,7 +269,9 @@ void revisarTres(char tablero[][_TMATRIZ]){
 					tablero[i][j-2] = '#';
 				}		
 				//HUBO COMBINACION
-				combinacion++;
+				combo = 3;
+				puntos += 100;	
+				return combo;
 			}
 		}
 		//RESETEA LA MATRIZ
@@ -187,4 +280,105 @@ void revisarTres(char tablero[][_TMATRIZ]){
 		//RELLENA EL TABLERO
 		rellenarTablero(tablero);
 	}
+	return combo;
+}
+/*
+|||||||||||||||||||||||||||||||||||||||||||
+||REVISAR REVISAR REVISAR REVISAR REVISAR||
+|||||||||||||||||||||||||||||||||||||||||||
+IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+*/
+int revisarVer(char tablero[][_TMATRIZ]){
+	int combo = 0;
+	for(int i=0;i<_TMATRIZ;i++){
+		for(int j=0;j<=(_TMATRIZ - 3);j++){
+			combi[0] = tablero[j][i];
+			//COMBINACION DE A 5
+			//VERIFICA SI NO ESTA EN LA CIMA DEL TABLERO
+			//COMPRUEBA COMBINACION
+			if(j <= (_TMATRIZ-5) && tablero[j+1][i] == combi[0] && tablero[j+2][i] == combi[0] && tablero[j+3][i] == combi[0] && tablero[j+4][i] == combi[0]){
+				
+				tablero[j][i]   = '#';
+				tablero[j+1][i] = '#';
+				tablero[j+2][i] = '#';
+				tablero[j+3][i] = '#';
+				tablero[j+4][i] = '#';		
+				//MUEVE TODAS LAS COLUMNAS DE LA COMBINACION HACIA ABAJO
+				if((j-1) != '#'){
+					while(j>0){
+							tablero[j][i]   = tablero[j-1][i];
+							tablero[j-1][i] = '#';
+							tablero[j+1][i] = tablero[j][i];
+							tablero[j][i]   = '#';
+							tablero[j+2][i] = tablero[j+1][i];
+							tablero[j+1][i] = '#';
+							tablero[j+3][i] = tablero[j+1][i];
+							tablero[j+2][i] = '#';
+							tablero[j+4][i] = tablero[j+1][i];
+							tablero[j+3][i] = '#';
+							j--;	
+					}	
+				}
+				combo = 1;
+				puntos += 500;
+				return combo;
+			}
+			//COMBINACION DE A 4
+			//VERIFICA SI NO ESTA EN LA CIMA DEL TABLERO
+			//COMPRUEBA COMBINACION
+			else if(j <= (_TMATRIZ-4) && tablero[j+1][i] == combi[0] && tablero[j+2][i] == combi[0] && tablero[j+3][i] == combi[0]){
+					
+				tablero[j][i]   = '#';
+				tablero[j+1][i] = '#';
+				tablero[j+2][i] = '#';
+				tablero[j+3][i] = '#';	
+				//MUEVE TODAS LAS COLUMNAS DE LA COMBINACION HACIA ABAJO
+				if((j-1) != '#'){
+					while(j>0){
+							tablero[j][i]   = tablero[j-1][i];
+							tablero[j-1][i] = '#';
+							tablero[j+1][i] = tablero[j][i];
+							tablero[j][i]   = '#';
+							tablero[j+2][i] = tablero[j+1][i];
+							tablero[j+1][i] = '#';
+							tablero[j+3][i] = tablero[j+1][i];
+							tablero[j+2][i] = '#';
+							j--;	
+					}	
+				}
+				combo = 2;
+				puntos += 300;
+				return combo;
+			}
+			//COMBINACION DE A 3
+			//VERIFICA SI NO ESTA EN LA CIMA DEL TABLERO
+			//COMPRUEBA COMBINACION
+			else if(tablero[j+1][i] == combi[0] && tablero[j+2][i] == combi[0]){
+					
+				tablero[j][i]   = '#';
+				tablero[j+1][i] = '#';
+				tablero[j+2][i] = '#';	
+				//MUEVE TODAS LAS COLUMNAS DE LA COMBINACION HACIA ABAJO
+				if((j-1) != '#'){
+					while(j>0){
+							tablero[j][i]   = tablero[j-1][i];
+							tablero[j-1][i] = '#';
+							tablero[j+1][i] = tablero[j][i];
+							tablero[j][i]   = '#';
+							tablero[j+2][i] = tablero[j+1][i];
+							tablero[j+1][i] = '#';
+							j--;	
+					}	
+				}	
+				combo = 3;
+				puntos += 100;
+				return combo;
+			}
+		}
+		//RELLENA EL TABLERO
+		rellenarTablero(tablero);	
+	}
+	return combo;
 }
